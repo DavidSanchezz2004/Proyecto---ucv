@@ -24,11 +24,14 @@ inject_env() {
     fi
 }
 
-inject_env "APP_NAME"  "${APP_NAME:-SOL-Access}"
-inject_env "APP_ENV"   "${APP_ENV:-production}"
-inject_env "APP_DEBUG" "${APP_DEBUG:-false}"
-inject_env "APP_URL"   "${APP_URL:-http://localhost}"
-inject_env "APP_KEY"   "${APP_KEY}"
+inject_env "APP_NAME"             "${APP_NAME:-SOL-Access}"
+inject_env "APP_ENV"              "${APP_ENV:-production}"
+inject_env "APP_DEBUG"            "${APP_DEBUG:-false}"
+inject_env "APP_URL"              "${APP_URL:-http://localhost}"
+inject_env "APP_KEY"              "${APP_KEY}"
+inject_env "SESSION_SECURE_COOKIE" "true"
+inject_env "SESSION_HTTP_ONLY"    "true"
+inject_env "SESSION_SAME_SITE"    "lax"
 
 # ── 2. Generar APP_KEY si sigue vacío ─────────────────────────
 if grep -q "^APP_KEY=$" .env 2>/dev/null || ! grep -q "^APP_KEY=" .env 2>/dev/null; then
