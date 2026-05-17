@@ -1,0 +1,109 @@
+@extends('layouts.app')
+
+@section('title', 'Nueva Empresa')
+@section('page-title', 'Nueva Empresa')
+
+@section('content')
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom py-3">
+                <h6 class="fw-bold mb-0"><i class="bi bi-building-add me-2 text-primary"></i>Registrar nueva empresa</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ route('companies.store') }}">
+                    @csrf
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">RUC <span class="text-danger">*</span></label>
+                        <input type="text" name="ruc" class="form-control font-monospace @error('ruc') is-invalid @enderror"
+                            value="{{ old('ruc') }}" placeholder="Ej: 20100066608" maxlength="11"
+                            pattern="\d{11}" title="El RUC debe tener exactamente 11 dígitos">
+                        @error('ruc')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        <div class="form-text">Debe tener exactamente 11 dígitos numéricos.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Razón Social <span class="text-danger">*</span></label>
+                        <input type="text" name="razon_social" class="form-control @error('razon_social') is-invalid @enderror"
+                            value="{{ old('razon_social') }}" placeholder="Nombre o denominación social" maxlength="255">
+                        @error('razon_social')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Tipo de Contribuyente</label>
+                            <select name="tipo_contribuyente" class="form-select @error('tipo_contribuyente') is-invalid @enderror">
+                                <option value="">Seleccionar...</option>
+                                <option value="PERSONA NATURAL"  {{ old('tipo_contribuyente') === 'PERSONA NATURAL'  ? 'selected' : '' }}>Persona Natural</option>
+                                <option value="PERSONA JURIDICA" {{ old('tipo_contribuyente') === 'PERSONA JURIDICA' ? 'selected' : '' }}>Persona Jurídica</option>
+                                <option value="EMPRESA"          {{ old('tipo_contribuyente') === 'EMPRESA'          ? 'selected' : '' }}>Empresa</option>
+                            </select>
+                            @error('tipo_contribuyente')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Estado <span class="text-danger">*</span></label>
+                            <select name="estado" class="form-select @error('estado') is-invalid @enderror">
+                                <option value="ACTIVO"     {{ old('estado','ACTIVO') === 'ACTIVO'     ? 'selected' : '' }}>Activo</option>
+                                <option value="BAJA"       {{ old('estado') === 'BAJA'       ? 'selected' : '' }}>Baja</option>
+                                <option value="SUSPENSION" {{ old('estado') === 'SUSPENSION' ? 'selected' : '' }}>Suspensión</option>
+                            </select>
+                            @error('estado')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Dirección Fiscal</label>
+                        <textarea name="direccion_fiscal" class="form-control @error('direccion_fiscal') is-invalid @enderror"
+                            rows="2" placeholder="Dirección registrada en SUNAT">{{ old('direccion_fiscal') }}</textarea>
+                        @error('direccion_fiscal')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+
+                    {{-- Credenciales SOL accordion --}}
+                    @php $solOpen = $errors->hasAny(['usuario_sol','clave_sol']) || old('usuario_sol'); @endphp
+                    <div class="mb-4">
+                        <button type="button"
+                            class="d-flex align-items-center justify-content-between w-100 text-start px-3 py-2 rounded border {{ $solOpen ? 'border-primary bg-primary bg-opacity-10' : 'border-secondary-subtle bg-light' }}"
+                            style="font-size:0.85rem;font-weight:600;color:{{ $solOpen ? '#0d6efd' : '#475569' }};cursor:pointer;"
+                            data-bs-toggle="collapse" data-bs-target="#solFields" aria-expanded="{{ $solOpen ? 'true' : 'false' }}">
+                            <span><i class="bi bi-key me-2"></i>Agregar credenciales SOL <span style="font-weight:400;font-size:0.75rem;">(opcional)</span></span>
+                            <i class="bi bi-chevron-down" style="transition:transform .2s;{{ $solOpen ? 'transform:rotate(180deg)' : '' }}"></i>
+                        </button>
+                        <div id="solFields" class="collapse {{ $solOpen ? 'show' : '' }}">
+                            <div class="border border-top-0 rounded-bottom p-3" style="background:#f8fafc;">
+                                <div class="row g-3">
+                                    <div class="col-md-5">
+                                        <label class="form-label fw-semibold" style="font-size:0.8rem;">Usuario SOL</label>
+                                        <input type="text" name="usuario_sol"
+                                            class="form-control font-monospace @error('usuario_sol') is-invalid @enderror"
+                                            value="{{ old('usuario_sol') }}" placeholder="Ej: 20100066" maxlength="8"
+                                            style="font-size:0.85rem;" autocomplete="off">
+                                        @error('usuario_sol')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        <div class="form-text" style="font-size:0.7rem;">Máximo 8 caracteres (SUNAT)</div>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <label class="form-label fw-semibold" style="font-size:0.8rem;">Clave SOL</label>
+                                        <input type="password" name="clave_sol"
+                                            class="form-control @error('clave_sol') is-invalid @enderror"
+                                            placeholder="Clave SOL" minlength="4"
+                                            style="font-size:0.85rem;" autocomplete="new-password">
+                                        @error('clave_sol')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                        <div class="form-text" style="font-size:0.7rem;">Se guarda cifrada. No se muestra nunca.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i>Guardar empresa
+                        </button>
+                        <a href="{{ route('companies.index') }}" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
