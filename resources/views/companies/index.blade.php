@@ -164,13 +164,13 @@
         <h5 class="exec-header-title">Directorio de Empresas</h5>
         <div class="exec-header-subtitle">Gestión unificada de entidades y accesos al Menu SOL</div>
     </div>
-    <a href="{{ route('companies.create') }}" class="btn-exec-primary text-decoration-none">
+    <a href="{{ route('companies.create') }}" class="btn-exec-primary text-decoration-none" id="tour-new-btn">
         <i class="bi bi-plus-lg me-2"></i>Nueva Empresa
     </a>
 </div>
 
 {{-- Filtro por último dígito RUC --}}
-<div class="exec-filter-bar mb-2">
+<div class="exec-filter-bar mb-2" id="tour-digit-bar">
     <div style="font-size:0.7rem;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.6rem;">
         Filtrar por último dígito RUC
     </div>
@@ -193,7 +193,7 @@
 </div>
 
 {{-- Filtros --}}
-<div class="exec-filter-bar">
+<div class="exec-filter-bar" id="tour-search-bar">
     <form method="GET" class="row g-3 align-items-center">
         @if(is_numeric(request('digito_ruc')))
         <input type="hidden" name="digito_ruc" value="{{ request('digito_ruc') }}">
@@ -220,7 +220,7 @@
     </form>
 </div>
 
-<div class="exec-panel">
+<div class="exec-panel" id="tour-companies-table">
     <div class="table-responsive">
         <table class="table table-exec mb-0">
             <thead>
@@ -385,6 +385,44 @@
 @endsection
 
 @push('scripts')
+<script>
+SOLTour.init({
+    pageKey: 'companies',
+    autoStart: true,
+    steps: [
+        {
+            target: '#tour-new-btn',
+            icon: 'building-add',
+            title: 'Registrar una empresa',
+            desc: 'Haz clic aquí para agregar una empresa nueva. Necesitarás el RUC de 11 dígitos y el nombre oficial tal como aparece en SUNAT.',
+            arrow: 'bottom'
+        },
+        {
+            target: '#tour-digit-bar',
+            icon: 'hash',
+            title: 'Filtrar por último dígito del RUC',
+            desc: 'SUNAT divide las declaraciones por el último número del RUC. Usa estos botones para ver rápidamente las empresas que te corresponden atender en un día determinado.',
+            tip: 'Por ejemplo, si hoy toca el dígito 3, haz clic en "3" y solo verás esas empresas.',
+            arrow: 'top'
+        },
+        {
+            target: '#tour-search-bar',
+            icon: 'funnel',
+            title: 'Buscar y filtrar',
+            desc: 'Escribe el nombre o RUC de la empresa que buscas. También puedes filtrar por estado: Activo, Baja o Suspensión para encontrar lo que necesitas más rápido.',
+            arrow: 'top'
+        },
+        {
+            target: '#tour-companies-table',
+            icon: 'table',
+            title: 'Lista de empresas',
+            desc: 'Aquí aparecen todas tus empresas. La columna "Credencial" muestra si ya tienen usuario y clave SOL configurados. Sin credencial, el botón de acceso no estará activo.',
+            tip: 'El botón azul "Menú SOL" abre el portal de SUNAT automáticamente, sin que tengas que escribir usuario ni contraseña.',
+            arrow: 'top'
+        }
+    ]
+});
+</script>
 <script>
 function solSimulation(companyId, companyName, ruc) {
     return {

@@ -106,7 +106,7 @@
     </div>
 </div>
 
-<div class="exec-panel">
+<div class="exec-panel" id="tour-log-filters">
     <div class="exec-panel-body" style="padding: 1rem 1.5rem;">
         <form method="GET" class="row g-3 align-items-center">
             <div class="col-md-3">
@@ -155,7 +155,7 @@
     </div>
 </div>
 
-<div class="exec-panel">
+<div class="exec-panel" id="tour-log-table">
     <div class="exec-panel-header">
         <h6 class="exec-panel-title" style="font-size:0.8rem;"><i class="bi bi-journal-text me-2 text-primary"></i>Trazabilidad de Conexiones</h6>
         <span class="badge-exec bg-blue">{{ $logs->total() }} registros encontrados</span>
@@ -233,4 +233,29 @@
     <div class="px-4 py-3 border-top">{{ $logs->links() }}</div>
     @endif
 </div>
+@push('scripts')
+<script>
+SOLTour.init({
+    pageKey: 'access_logs',
+    autoStart: true,
+    steps: [
+        {
+            target: '#tour-log-filters',
+            icon: 'funnel',
+            title: 'Busca accesos específicos',
+            desc: 'Usa estos filtros para encontrar un acceso en particular. Puedes buscar por empresa, rango de fechas o resultado: si el acceso fue exitoso, fallido o está pendiente.',
+            tip: 'Combina el filtro de empresa con un rango de fechas para ver el historial de una empresa en un periodo específico.',
+            arrow: 'top'
+        },
+        {
+            target: '#tour-log-table',
+            icon: 'clock-history',
+            title: 'Historial de accesos',
+            desc: 'Cada fila representa un ingreso al portal de SUNAT. Puedes ver en qué fecha ocurrió, a qué empresa, si fue exitoso y cuántos segundos tardó el sistema.',
+            arrow: 'top'
+        }
+    ]
+});
+</script>
+@endpush
 @endsection

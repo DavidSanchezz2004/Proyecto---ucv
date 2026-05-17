@@ -231,6 +231,87 @@
             #sidebar.show { transform: translateX(0); }
             #main-content { margin-left: 0; }
         }
+
+        /* ── Tour / Coach Marks ─────────────────── */
+        .tour-overlay {
+            position:fixed;inset:0;background:rgba(15,23,42,.55);
+            backdrop-filter:blur(3px);z-index:1050;opacity:0;pointer-events:none;
+            transition:opacity .25s ease;
+        }
+        .tour-overlay.tour-show{opacity:1;pointer-events:auto;}
+        .tour-popover {
+            position:fixed;width:min(365px,calc(100vw - 28px));
+            background:#0f172a;border:1px solid rgba(255,255,255,.07);
+            border-radius:18px;padding:20px 20px 16px;
+            box-shadow:0 32px 64px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.04);
+            z-index:1060;opacity:0;pointer-events:none;
+            transform:translateY(8px) scale(.97);
+            transition:opacity .22s ease,transform .22s ease;
+            font-family:'Montserrat',sans-serif;
+        }
+        .tour-popover.tour-show{opacity:1;pointer-events:auto;transform:none;}
+        .tour-popover::before{
+            content:'';position:absolute;width:12px;height:12px;
+            background:#0f172a;border-radius:2px;transform:rotate(45deg);
+        }
+        .tour-popover.arrow-left::before  {left:-5px;top:50%;margin-top:-6px;}
+        .tour-popover.arrow-right::before {right:-5px;top:50%;margin-top:-6px;}
+        .tour-popover.arrow-top::before   {left:28px;top:-5px;}
+        .tour-popover.arrow-bottom::before{left:28px;bottom:-5px;}
+        .tour-pov-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+        .tour-icon-box{
+            width:36px;height:36px;border-radius:9px;
+            background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.22);
+            display:flex;align-items:center;justify-content:center;color:#60a5fa;font-size:1rem;
+        }
+        .tour-close-btn{
+            width:26px;height:26px;background:rgba(255,255,255,.06);border:none;
+            border-radius:50%;color:#64748b;cursor:pointer;
+            display:flex;align-items:center;justify-content:center;
+            font-size:.85rem;transition:background .2s,color .2s;
+        }
+        .tour-close-btn:hover{background:rgba(255,255,255,.12);color:#f8fafc;}
+        .tour-title{font-size:.95rem;font-weight:800;color:#f8fafc;letter-spacing:-.02em;margin-bottom:7px;line-height:1.3;}
+        .tour-desc{font-size:.79rem;color:rgba(248,250,252,.72);line-height:1.65;margin-bottom:10px;}
+        .tour-tip{
+            background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
+            border-radius:8px;padding:8px 11px;font-size:.72rem;
+            color:rgba(248,250,252,.55);line-height:1.55;margin-bottom:12px;
+        }
+        .tour-tip strong{color:#93c5fd;}
+        .tour-footer{
+            display:flex;align-items:center;justify-content:space-between;gap:10px;
+            padding-top:12px;border-top:1px solid rgba(255,255,255,.05);
+        }
+        .tour-dots{display:flex;gap:4px;align-items:center;}
+        .tour-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.18);transition:all .25s;}
+        .tour-dot.active{background:#3b82f6;width:14px;border-radius:3px;}
+        .tour-actions{display:flex;gap:6px;}
+        .tour-btn{
+            border:none;border-radius:999px;padding:7px 13px;
+            font-size:.74rem;font-weight:700;font-family:'Montserrat',sans-serif;
+            cursor:pointer;transition:all .2s;
+            display:inline-flex;align-items:center;gap:4px;white-space:nowrap;
+        }
+        .tour-btn:hover:not(:disabled){transform:translateY(-1px);}
+        .tour-btn:disabled{opacity:.35;cursor:not-allowed;transform:none!important;}
+        .tour-btn-ghost  {background:rgba(255,255,255,.07);color:rgba(248,250,252,.75);}
+        .tour-btn-primary{background:#2c7be5;color:#fff;}
+        .tour-btn-success{background:#059669;color:#fff;}
+        .tour-highlighted{
+            position:relative!important;z-index:1055!important;
+            box-shadow:0 0 0 3px rgba(44,123,229,.5),0 0 0 8px rgba(44,123,229,.14),
+                       0 20px 40px rgba(0,0,0,.18)!important;
+            border-radius:8px;transform:scale(1.008)!important;
+            transition:box-shadow .3s,transform .25s!important;
+        }
+        .tour-trigger-btn{
+            width:30px;height:30px;background:transparent;border:1px solid #e2e8f0;
+            border-radius:7px;display:inline-flex;align-items:center;justify-content:center;
+            color:#94a3b8;font-size:.85rem;cursor:pointer;transition:all .2s;
+            margin-left:.5rem;flex-shrink:0;
+        }
+        .tour-trigger-btn:hover{background:#eff6ff;color:#2c7be5;border-color:#2c7be5;}
     </style>
     @stack('styles')
 </head>
@@ -288,6 +369,12 @@
         @endif
 
         <span class="nav-section">Investigación</span>
+        <a href="{{ route('research.about') }}" class="nav-link {{ request()->routeIs('research.about') ? 'active' : '' }}">
+            <i class="bi bi-journal-text"></i> Sobre el estudio
+        </a>
+        <a href="{{ route('research.team') }}" class="nav-link {{ request()->routeIs('research.team') ? 'active' : '' }}">
+            <i class="bi bi-people-fill"></i> Equipo
+        </a>
         <a href="{{ route('survey.index') }}" class="nav-link {{ request()->routeIs('survey.index') ? 'active' : '' }}">
             <i class="bi bi-clipboard2-data"></i> Piloto Likert
         </a>
@@ -325,6 +412,9 @@
                 <i class="bi bi-list"></i>
             </button>
             <span class="page-title">@yield('page-title', 'Panel')</span>
+            <button type="button" class="tour-trigger-btn" data-tour-start title="Guía de uso">
+                <i class="bi bi-map"></i>
+            </button>
         </div>
         <div class="user-info text-end d-none d-md-block">
             <div style="font-size:13px;font-weight:600">{{ auth()->user()->name }}</div>
@@ -355,6 +445,7 @@ document.getElementById('sidebarToggle')?.addEventListener('click', function () 
 });
 </script>
 
+@include('partials.tour')
 @stack('scripts')
 </body>
 </html>

@@ -108,13 +108,25 @@
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Contraseña <span class="text-danger">*</span></label>
-                    <input type="password" name="password" class="form-control @error('password') is-invalid @enderror"
-                        placeholder="Min. 8 caracteres">
-                    @error('password')<div class="invalid-feedback" style="font-size:0.7rem">{{ $message }}</div>@enderror
+                    <div class="input-group">
+                        <input type="password" name="password" id="reg-password"
+                            class="form-control @error('password') is-invalid @enderror"
+                            placeholder="Min. 8 caracteres" style="border-right:none;">
+                        <span class="input-group-text bg-white" style="border-left:none;cursor:pointer;border-color:#d8e2ef;" id="toggleRegPass">
+                            <i class="bi bi-eye text-muted" id="eyeRegPass" style="font-size:0.85rem;"></i>
+                        </span>
+                    </div>
+                    @error('password')<div class="text-danger mt-1" style="font-size:0.7rem"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>@enderror
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Confirmar contraseña <span class="text-danger">*</span></label>
-                    <input type="password" name="password_confirmation" class="form-control" placeholder="Repite la contraseña">
+                    <div class="input-group">
+                        <input type="password" name="password_confirmation" id="reg-password-confirm"
+                            class="form-control" placeholder="Repite la contraseña" style="border-right:none;">
+                        <span class="input-group-text bg-white" style="border-left:none;cursor:pointer;border-color:#d8e2ef;" id="toggleRegConfirm">
+                            <i class="bi bi-eye text-muted" id="eyeRegConfirm" style="font-size:0.85rem;"></i>
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -173,8 +185,27 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-register w-100 mt-2">
-                Crear cuenta
+            {{-- Términos y Condiciones --}}
+            <div class="mt-3 p-3 rounded" style="background:#f8fafc; border:1px solid #e2e8f0;">
+                <div class="form-check">
+                    <input type="checkbox" name="terms" id="terms" value="1"
+                        class="form-check-input @error('terms') is-invalid @enderror"
+                        {{ old('terms') ? 'checked' : '' }}>
+                    <label class="form-check-label" for="terms" style="font-size:0.8rem; color:#334155; line-height:1.4;">
+                        He leído y acepto los
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" style="color:#2c7be5; font-weight:600;">
+                            Términos y Condiciones de uso
+                        </a>
+                        <span class="text-danger">*</span>
+                    </label>
+                    @error('terms')
+                    <div class="invalid-feedback" style="font-size:0.7rem;">Debes aceptar los Términos y Condiciones para continuar.</div>
+                    @enderror
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-register w-100 mt-3">
+                <i class="bi bi-person-check me-2"></i>Crear cuenta
             </button>
 
             <div class="text-center mt-3" style="font-size:0.78rem;color:#6b7280">
@@ -183,4 +214,50 @@
         </form>
     </div>
 </div>
+
 @endsection
+
+@section('scripts')
+<script>
+function togglePass(inputId, iconId) {
+    const input = document.getElementById(inputId);
+    const icon  = document.getElementById(iconId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'bi bi-eye-slash text-muted';
+    } else {
+        input.type = 'password';
+        icon.className = 'bi bi-eye text-muted';
+    }
+}
+document.getElementById('toggleRegPass').addEventListener('click', () => togglePass('reg-password', 'eyeRegPass'));
+document.getElementById('toggleRegConfirm').addEventListener('click', () => togglePass('reg-password-confirm', 'eyeRegConfirm'));
+</script>
+@endsection
+
+@push('modals')
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel" style="font-size:1rem; font-weight:700; color:#1e293b;">
+                    <i class="bi bi-file-earmark-text me-2 text-primary"></i>Términos y Condiciones de Uso
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="font-size:0.82rem; color:#334155; line-height:1.8;">
+                @include('partials.terms-content')
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-1"></i>Cerrar
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" data-bs-dismiss="modal"
+                    onclick="document.getElementById('terms').checked = true; document.getElementById('terms').dispatchEvent(new Event('change'));">
+                    <i class="bi bi-check-lg me-1"></i>Acepto los Términos y Condiciones
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+@endpush

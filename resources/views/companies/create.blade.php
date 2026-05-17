@@ -13,7 +13,7 @@
             <div class="card-body">
                 <form method="POST" action="{{ route('companies.store') }}">
                     @csrf
-                    <div class="mb-3">
+                    <div class="mb-3" id="tour-field-ruc">
                         <label class="form-label fw-semibold">RUC <span class="text-danger">*</span></label>
                         <input type="text" name="ruc" class="form-control font-monospace @error('ruc') is-invalid @enderror"
                             value="{{ old('ruc') }}" placeholder="Ej: 20100066608" maxlength="11"
@@ -22,14 +22,14 @@
                         <div class="form-text">Debe tener exactamente 11 dígitos numéricos.</div>
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-3" id="tour-field-razon">
                         <label class="form-label fw-semibold">Razón Social <span class="text-danger">*</span></label>
                         <input type="text" name="razon_social" class="form-control @error('razon_social') is-invalid @enderror"
                             value="{{ old('razon_social') }}" placeholder="Nombre o denominación social" maxlength="255">
                         @error('razon_social')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
 
-                    <div class="row g-3">
+                    <div class="row g-3" id="tour-field-tipos">
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-semibold">Tipo de Contribuyente</label>
                             <select name="tipo_contribuyente" class="form-select @error('tipo_contribuyente') is-invalid @enderror">
@@ -52,7 +52,7 @@
                         </div>
                     </div>
 
-                    <div class="mb-4">
+                    <div class="mb-4" id="tour-field-address">
                         <label class="form-label fw-semibold">Dirección Fiscal</label>
                         <textarea name="direccion_fiscal" class="form-control @error('direccion_fiscal') is-invalid @enderror"
                             rows="2" placeholder="Dirección registrada en SUNAT">{{ old('direccion_fiscal') }}</textarea>
@@ -60,8 +60,9 @@
                     </div>
 
                     {{-- Credenciales SOL accordion --}}
+                    {{-- id used by tour --}}
                     @php $solOpen = $errors->hasAny(['usuario_sol','clave_sol']) || old('usuario_sol'); @endphp
-                    <div class="mb-4">
+                    <div class="mb-4" id="tour-sol-section">
                         <button type="button"
                             class="d-flex align-items-center justify-content-between w-100 text-start px-3 py-2 rounded border {{ $solOpen ? 'border-primary bg-primary bg-opacity-10' : 'border-secondary-subtle bg-light' }}"
                             style="font-size:0.85rem;font-weight:600;color:{{ $solOpen ? '#0d6efd' : '#475569' }};cursor:pointer;"
@@ -106,4 +107,51 @@
         </div>
     </div>
 </div>
+@push('scripts')
+<script>
+SOLTour.init({
+    pageKey: 'companies_create',
+    autoStart: true,
+    steps: [
+        {
+            target: '#tour-field-ruc',
+            icon: 'upc-scan',
+            title: 'RUC de la empresa',
+            desc: 'Ingresa los 11 dígitos del RUC exactamente como aparece en los documentos tributarios. No uses guiones ni espacios.',
+            tip: 'Puedes verificar el RUC en el portal de consulta de SUNAT si no lo tienes a mano.',
+            arrow: 'top'
+        },
+        {
+            target: '#tour-field-razon',
+            icon: 'building',
+            title: 'Nombre de la empresa',
+            desc: 'Escribe el nombre oficial tal como está registrado en SUNAT. Puede ser el nombre completo de una persona o la razón social de una empresa.',
+            arrow: 'top'
+        },
+        {
+            target: '#tour-field-tipos',
+            icon: 'tags',
+            title: 'Tipo y estado',
+            desc: 'Indica si es persona natural (una persona como tú), persona jurídica (empresa con RUC de 20...) o empresa en general. El estado muestra si está activa en SUNAT.',
+            arrow: 'top'
+        },
+        {
+            target: '#tour-field-address',
+            icon: 'geo-alt',
+            title: 'Dirección fiscal',
+            desc: 'Es la dirección que la empresa tiene registrada ante SUNAT. Este campo es opcional pero te ayuda a tener el perfil completo de la empresa.',
+            arrow: 'top'
+        },
+        {
+            target: '#tour-sol-section',
+            icon: 'key',
+            title: 'Credenciales SOL',
+            desc: 'Si ya tienes el usuario y clave SOL de esta empresa, agrégalos aquí haciendo clic en el botón para desplegar el formulario. Con esto el botón de acceso automático quedará habilitado.',
+            tip: 'Las credenciales se guardan de forma cifrada. Nunca se muestran en pantalla.',
+            arrow: 'top'
+        }
+    ]
+});
+</script>
+@endpush
 @endsection

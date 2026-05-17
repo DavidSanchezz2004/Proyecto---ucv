@@ -140,6 +140,7 @@
                     <th>Credencial (Correo)</th>
                     <th>Nivel de Acceso</th>
                     <th>Estado Operativo</th>
+                    <th>T&amp;C</th>
                     <th>Último Login</th>
                     <th class="text-end">Opciones</th>
                 </tr>
@@ -177,6 +178,16 @@
                             @endif
                         </div>
                     </td>
+                    <td>
+                        @if($user->terms_accepted_at)
+                            <span class="badge-exec bg-emerald" title="Aceptados el {{ $user->terms_accepted_at->format('d M Y, H:i') }}&#10;IP: {{ $user->terms_accepted_ip ?? '—' }}">
+                                <i class="bi bi-check-circle"></i> Aceptó
+                            </span>
+                            <div style="font-size:0.65rem; color:#64748b; margin-top:2px;">{{ $user->terms_accepted_at->format('d/m/Y') }}</div>
+                        @else
+                            <span class="badge-exec bg-slate"><i class="bi bi-dash-circle"></i> Pendiente</span>
+                        @endif
+                    </td>
                     <td style="font-size:0.75rem; color:#64748b; font-weight:500;">
                         {{ $user->last_login_at ? $user->last_login_at->format('d M Y, H:i') : 'Nunca' }}
                     </td>
@@ -207,7 +218,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="text-center py-5">
+                    <td colspan="7" class="text-center py-5">
                         <i class="bi bi-people text-muted" style="font-size:2.5rem; opacity:0.5;"></i>
                         <div class="mt-2 text-muted" style="font-size:0.85rem; font-weight:500;">No se encontraron usuarios en la plataforma</div>
                     </td>

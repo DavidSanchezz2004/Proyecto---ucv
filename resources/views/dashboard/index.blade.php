@@ -173,7 +173,7 @@
 
 {{-- Eficiencia Banner --}}
 @if($accessesTotal > 0)
-<div class="efficiency-banner mb-4">
+<div class="efficiency-banner mb-4" id="tour-efficiency-banner">
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-4">
         <div>
             <div class="eb-title">Análisis de Eficiencia Operativa</div>
@@ -203,7 +203,7 @@
 @endif
 
 {{-- KPI Cards --}}
-<div class="row g-3 mb-4">
+<div class="row g-3 mb-4" id="tour-kpi-grid">
     <div class="col-6 col-md-4 col-xl-2">
         <div class="stat-card">
             <div class="stat-icon icon-slate"><i class="bi bi-buildings"></i></div>
@@ -251,7 +251,7 @@
 <div class="row g-3">
     {{-- Gráfico de accesos --}}
     <div class="col-md-7">
-        <div class="exec-panel">
+        <div class="exec-panel" id="tour-chart-panel">
             <div class="exec-panel-header">
                 <h6 class="exec-panel-title">Volumen de Accesos (7 Días)</h6>
                 <i class="bi bi-bar-chart-line text-muted"></i>
@@ -264,7 +264,7 @@
 
     {{-- Últimos accesos SOL --}}
     <div class="col-md-5">
-        <div class="exec-panel">
+        <div class="exec-panel" id="tour-recent-panel">
             <div class="exec-panel-header">
                 <h6 class="exec-panel-title">Registro Reciente</h6>
                 <a href="{{ route('access-logs.index') }}" class="text-decoration-none" style="font-size:0.75rem; font-weight:600;">Ver todos</a>
@@ -342,7 +342,7 @@
 <div class="row g-3 mt-1">
 
     {{-- Mis Empresas --}}
-    <div class="col-md-7">
+    <div class="col-md-7" id="tour-my-companies">
         <div class="exec-panel" style="height:auto;">
             <div class="exec-panel-header">
                 <h6 class="exec-panel-title"><i class="bi bi-buildings me-2 text-primary"></i>Mis Empresas</h6>
@@ -413,7 +413,7 @@
         @endif
 
         {{-- Encuesta Likert --}}
-        <div class="exec-panel" style="height:auto;padding:1.5rem;">
+        <div class="exec-panel" id="tour-survey-card" style="height:auto;padding:1.5rem;">
             <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
                 <div style="width:36px;height:36px;border-radius:8px;background:{{ $surveyDone ? '#f0fdf4' : '#fffbeb' }};display:flex;align-items:center;justify-content:center;">
                     <i class="bi bi-clipboard2-{{ $surveyDone ? 'check-fill' : 'data' }}" style="font-size:1.1rem;color:{{ $surveyDone ? '#059669' : '#d97706' }};"></i>
@@ -450,9 +450,100 @@
     </div>
 </div>
 @endif
+{{-- Post-registration terms confirmation modal --}}
+@if(session('terms_accepted'))
+<div class="modal fade" id="termsConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:480px;">
+        <div class="modal-content" style="border-radius:10px; border:none; box-shadow:0 20px 60px rgba(0,0,0,0.15);">
+            <div class="modal-body text-center p-5">
+                <div style="width:64px;height:64px;background:#f0fdf4;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">
+                    <i class="bi bi-shield-check-fill" style="font-size:1.8rem;color:#059669;"></i>
+                </div>
+                <h5 style="font-weight:700;color:#1e293b;margin-bottom:0.5rem;">Términos y Condiciones Aceptados</h5>
+                <p style="font-size:0.85rem;color:#64748b;margin-bottom:0.25rem;">
+                    Has aceptado los Términos y Condiciones de uso de SOL-Access.
+                </p>
+                <p style="font-size:0.78rem;color:#94a3b8;margin-bottom:1.5rem;">
+                    Fecha de aceptación: <strong>{{ now()->format('d/m/Y \a \l\a\s H:i') }}</strong>
+                </p>
+                <button type="button" class="btn btn-primary btn-sm px-4" data-bs-dismiss="modal">
+                    Continuar al sistema
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    new bootstrap.Modal(document.getElementById('termsConfirmModal')).show();
+});
+</script>
+@endpush
+@endif
 @endsection
 
 @push('scripts')
+<script>
+SOLTour.init({
+    pageKey: 'dashboard',
+    autoStart: true,
+    steps: [
+        {
+            target: '#sidebar',
+            icon: 'layout-sidebar',
+            title: 'Menú de navegación',
+            desc: 'Desde aquí puedes moverte entre todas las secciones del sistema: tus empresas, historial de accesos, eficiencia y encuesta. Siempre visible a la izquierda.',
+            arrow: 'left'
+        },
+        {
+            target: '#tour-kpi-grid',
+            icon: 'grid-1x2',
+            title: 'Resumen de tu actividad',
+            desc: 'Estos cuadros muestran de un vistazo cuántas empresas tienes registradas, cuántos accesos realizaste hoy y cuánto tiempo llevas ahorrado en total.',
+            tip: 'Los números se actualizan cada vez que usas el botón de acceso SOL.',
+            arrow: 'top'
+        },
+        {
+            target: '#tour-efficiency-banner',
+            icon: 'lightning-charge',
+            title: 'Tu ahorro de tiempo',
+            desc: 'Compara el tiempo que tomaría ingresar manualmente al portal SUNAT (30 segundos) contra el tiempo real que tarda el sistema. La diferencia es tu ganancia.',
+            arrow: 'top'
+        },
+        {
+            target: '#tour-chart-panel',
+            icon: 'bar-chart-line',
+            title: 'Actividad de los últimos 7 días',
+            desc: 'Este gráfico muestra cuántas veces usaste el sistema cada día durante la última semana. Te ayuda a ver qué días fuiste más activo.',
+            arrow: 'top'
+        },
+        {
+            target: '#tour-recent-panel',
+            icon: 'clock-history',
+            title: 'Últimos accesos registrados',
+            desc: 'Aquí aparecen los accesos más recientes al portal de SUNAT. Puedes ver a qué empresa ingresaste y en cuántos segundos lo hizo el sistema.',
+            arrow: 'right'
+        },
+        {
+            target: '#tour-my-companies',
+            icon: 'buildings',
+            title: 'Mis empresas',
+            desc: 'Lista de las empresas que has registrado. El indicador verde confirma que tienen credenciales SOL activas y el botón de acceso estará disponible.',
+            tip: 'Si una empresa aparece sin credencial, entra a su perfil y agrégalas.',
+            arrow: 'top'
+        },
+        {
+            target: '#tour-survey-card',
+            icon: 'clipboard2-data',
+            title: 'Encuesta de investigación',
+            desc: 'Esta encuesta forma parte del estudio académico de la UCV. Solo toma unos minutos y tu opinión es muy valiosa. La barra muestra cuánto llevas completado.',
+            tip: 'Solo puedes responderla una vez. Tómate el tiempo para leer cada pregunta.',
+            arrow: 'right'
+        }
+    ]
+});
+</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script>
 const ctx = document.getElementById('accessChart').getContext('2d');

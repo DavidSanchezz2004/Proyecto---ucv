@@ -21,7 +21,7 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
             margin: 0;
         }
         /* Background circles matching the design */
@@ -51,6 +51,7 @@
         @yield('content')
     </div>
 
+    @stack('modals')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     @yield('scripts')
 </body>

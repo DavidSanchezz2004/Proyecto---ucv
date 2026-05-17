@@ -26,11 +26,22 @@ class RegisterController extends Controller
             'name'         => ['required', 'string', 'max:255'],
             'email'        => ['required', 'email', 'max:255', 'unique:users,email'],
             'password'     => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()],
+            'terms'        => ['accepted'],
             'ruc'          => ['nullable', 'regex:/^\d{11}$/', 'unique:companies,ruc'],
             'razon_social' => ['required_with:ruc', 'nullable', 'string', 'max:255'],
             'usuario_sol'  => ['required_with:ruc', 'nullable', 'string', 'max:8'],
             'clave_sol'    => ['required_with:ruc', 'nullable', 'string', 'min:6'],
         ], [
+            'name.required'      => 'El nombre completo es obligatorio.',
+            'email.required'     => 'El correo electrónico es obligatorio.',
+            'email.email'        => 'Ingresa un correo electrónico válido.',
+            'email.unique'       => 'Este correo ya está registrado. ¿Ya tienes cuenta?',
+            'password.required'  => 'La contraseña es obligatoria.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+            'password.min'       => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.mixed'     => 'La contraseña debe incluir al menos una letra mayúscula y una minúscula.',
+            'password.numbers'   => 'La contraseña debe incluir al menos un número.',
+            'terms.accepted'     => 'Debes aceptar los Términos y Condiciones para continuar.',
             'ruc.regex'          => 'El RUC debe tener exactamente 11 dígitos.',
             'ruc.unique'         => 'Este RUC ya está registrado en el sistema.',
             'razon_social.required_with' => 'La Razón Social es obligatoria si ingresa un RUC.',
@@ -43,11 +54,13 @@ class RegisterController extends Controller
             $role = Role::where('name', 'asistente')->firstOrFail();
 
             $user = User::create([
-                'name'      => $request->name,
-                'email'     => $request->email,
-                'password'  => $request->password,
-                'role_id'   => $role->id,
-                'is_active' => true,
+                'name'               => $request->name,
+                'email'              => $request->email,
+                'password'           => $request->password,
+                'role_id'            => $role->id,
+                'is_active'          => true,
+                'terms_accepted_at'  => now(),
+                'terms_accepted_ip'  => $request->ip(),
             ]);
 
             if ($request->filled('ruc')) {
@@ -75,6 +88,7 @@ class RegisterController extends Controller
         });
 
         return redirect()->route('dashboard')
+            ->with('terms_accepted', true)
             ->with('success', '¡Bienvenido! Tu cuenta ha sido creada correctamente.');
     }
 }

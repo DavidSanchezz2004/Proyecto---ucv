@@ -123,7 +123,7 @@
 </div>
 
 {{-- Contexto académico --}}
-<div class="exec-alert-academic">
+<div class="exec-alert-academic" id="tour-eff-note">
     <i class="bi bi-mortarboard-fill" style="font-size:1.5rem; color:#3b82f6;"></i>
     <div>
         <div style="font-size:0.8rem; font-weight:600; color:#1e293b; margin-bottom:0.2rem;">Parámetros de Investigación Formativa</div>
@@ -136,7 +136,7 @@
 </div>
 
 {{-- KPIs principales --}}
-<div class="row g-4 mb-4">
+<div class="row g-4 mb-4" id="tour-eff-kpis">
     <div class="col-md-3">
         <div class="exec-stat-card">
             <div class="exec-stat-value" style="color:#1e293b;">{{ $baseline }}s</div>
@@ -169,7 +169,7 @@
 
 {{-- Comparativa visual --}}
 @if($totalAccesses > 0)
-<div class="comparison-box">
+<div class="comparison-box" id="tour-eff-comparison">
     <h6 style="font-size:0.9rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:#cbd5e1; margin-bottom:1.5rem;">
         <i class="bi bi-bar-chart-line me-2"></i>Comparativa: Acceso Manual vs. Automatizado
     </h6>
@@ -261,7 +261,7 @@
 </div>
 
 {{-- Por empresa --}}
-<div class="exec-panel">
+<div class="exec-panel" id="tour-eff-by-company">
     <div class="exec-panel-header">
         <h6 class="exec-panel-title"><i class="bi bi-building me-2 text-secondary"></i>Análisis de Eficiencia por Entidad</h6>
     </div>
@@ -325,6 +325,43 @@
 @endsection
 
 @push('scripts')
+<script>
+SOLTour.init({
+    pageKey: 'efficiency',
+    autoStart: true,
+    steps: [
+        {
+            target: '#tour-eff-note',
+            icon: 'mortarboard',
+            title: '¿Qué mide esta página?',
+            desc: 'Esta sección compara cuánto tiempo tomaría ingresar al portal SUNAT de forma manual versus usando el sistema automático. Es el indicador principal del estudio.',
+            arrow: 'top'
+        },
+        {
+            target: '#tour-eff-kpis',
+            icon: 'speedometer2',
+            title: 'Tus números de eficiencia',
+            desc: 'El primer cuadro muestra el tiempo manual estimado (30 segundos). El segundo es tu tiempo promedio real. El porcentaje es cuánto más rápido es el sistema comparado con hacerlo a mano.',
+            tip: 'Cuanto más uses el sistema, más preciso se vuelve tu promedio.',
+            arrow: 'top'
+        },
+        {
+            target: '#tour-eff-comparison',
+            icon: 'bar-chart-steps',
+            title: 'Comparativa lado a lado',
+            desc: 'Aquí ves claramente la diferencia entre el proceso manual y el automatizado. El número verde es el tiempo que ahorras por cada acceso.',
+            arrow: 'top'
+        },
+        {
+            target: '#tour-eff-by-company',
+            icon: 'table',
+            title: 'Desglose por empresa',
+            desc: 'Esta tabla muestra empresa por empresa: cuántos accesos hiciste, cuánto tardó en promedio y el tiempo total ahorrado. Puedes ver en qué empresas el sistema funcionó mejor.',
+            arrow: 'top'
+        }
+    ]
+});
+</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script>
 @if($distribution->count() > 0)

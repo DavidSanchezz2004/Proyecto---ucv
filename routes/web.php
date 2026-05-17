@@ -10,6 +10,7 @@ use App\Http\Controllers\SolAccessController;
 use App\Http\Controllers\AccessLogController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SurveyController;
+use App\Http\Controllers\ResearchController;
 use Illuminate\Support\Facades\Route;
 
 // Rutas de invitado
@@ -62,4 +63,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get ('survey',        [SurveyController::class, 'index'])->name('survey.index');
     Route::post('survey',        [SurveyController::class, 'store'])->name('survey.store');
     Route::get ('survey/thanks', [SurveyController::class, 'thanks'])->name('survey.thanks');
+
+    // Páginas informativas de investigación
+    Route::get('research/about', [ResearchController::class, 'about'])->name('research.about');
+    Route::get('research/team',  [ResearchController::class, 'team'])->name('research.team');
 });

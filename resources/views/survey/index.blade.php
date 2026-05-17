@@ -120,7 +120,7 @@
             </div>
         </div>
 
-        <div class="exec-alert-academic">
+        <div class="exec-alert-academic" id="tour-survey-intro">
             <i class="bi bi-clipboard-data-fill" style="font-size:1.5rem; color:#3b82f6;"></i>
             <div>
                 <div style="font-size:0.8rem; font-weight:600; color:#1e293b; margin-bottom:0.2rem;">Investigación Formativa UCV 2026</div>
@@ -132,7 +132,7 @@
             </div>
         </div>
 
-        <form method="POST" action="{{ route('survey.store') }}">
+        <form method="POST" action="{{ route('survey.store') }}" id="tour-survey-form">
             @csrf
 
             @foreach($questions as $dimension => $items)
@@ -186,7 +186,7 @@
             </div>
             @endforeach
 
-            <div class="exec-panel p-4" style="background:#f8fafc; display:flex; align-items:center; justify-content:space-between;">
+            <div class="exec-panel p-4" id="tour-survey-submit" style="background:#f8fafc; display:flex; align-items:center; justify-content:space-between;">
                 <div style="font-size:0.8rem; color:#64748b; font-weight:500;">
                     <i class="bi bi-info-circle me-2 text-primary"></i>Las respuestas enviadas son definitivas y no podrán ser modificadas.
                 </div>
@@ -197,4 +197,37 @@
         </form>
     </div>
 </div>
+@push('scripts')
+<script>
+SOLTour.init({
+    pageKey: 'survey',
+    autoStart: true,
+    steps: [
+        {
+            target: '#tour-survey-intro',
+            icon: 'clipboard2-data',
+            title: '¿Para qué es esta encuesta?',
+            desc: 'Esta encuesta forma parte de una investigación académica de la UCV. Tus respuestas ayudan a evaluar si el sistema realmente mejora el trabajo diario de los asistentes contables.',
+            tip: 'Solo puedes responder una vez, así que tómate el tiempo para leer cada afirmación con calma.',
+            arrow: 'top'
+        },
+        {
+            target: '#tour-survey-form',
+            icon: 'list-ol',
+            title: 'Cómo responder',
+            desc: 'Para cada afirmación, selecciona un número del 1 al 5. El 1 significa que estás totalmente en desacuerdo y el 5 que estás totalmente de acuerdo. No hay respuestas correctas o incorrectas.',
+            tip: 'Lee cada grupo de preguntas completo antes de marcar tu respuesta.',
+            arrow: 'top'
+        },
+        {
+            target: '#tour-survey-submit',
+            icon: 'send',
+            title: 'Enviar tus respuestas',
+            desc: 'Cuando hayas respondido todas las preguntas, haz clic en "Registrar Respuestas". Una vez enviadas, no podrás modificarlas, así que revísalas antes de confirmar.',
+            arrow: 'top'
+        }
+    ]
+});
+</script>
+@endpush
 @endsection
