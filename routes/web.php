@@ -11,6 +11,7 @@ use App\Http\Controllers\AccessLogController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\ResearchController;
+use App\Http\Controllers\Auth\GoogleController;
 use Illuminate\Support\Facades\Route;
 
 // Rutas de invitado
@@ -19,6 +20,12 @@ Route::middleware('guest')->group(function () {
     Route::post('/login',    [AuthController::class,    'login'])->middleware('throttle:10,1')->name('login.post');
     Route::get('/register',  [RegisterController::class, 'showForm'])->name('register');
     Route::post('/register', [RegisterController::class, 'register'])->middleware('throttle:5,1')->name('register.post');
+
+    // Google OAuth
+    Route::get('auth/google',          [GoogleController::class, 'redirect'])->name('google.redirect');
+    Route::get('auth/google/callback', [GoogleController::class, 'callback'])->name('google.callback');
+    Route::get('auth/google/terms',    [GoogleController::class, 'showTerms'])->name('google.terms');
+    Route::post('auth/google/terms',   [GoogleController::class, 'completeRegistration'])->name('google.terms.complete');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
