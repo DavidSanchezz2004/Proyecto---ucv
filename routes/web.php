@@ -17,9 +17,9 @@ use Illuminate\Support\Facades\Route;
 // Rutas de invitado
 Route::middleware('guest')->group(function () {
     Route::get('/',          [AuthController::class,    'showLoginForm'])->name('login');
-    Route::post('/login',    [AuthController::class,    'login'])->middleware('throttle:10,1')->name('login.post');
+    Route::post('/login',    [AuthController::class,    'login'])->middleware('throttle:5,1')->name('login.post');
     Route::get('/register',  [RegisterController::class, 'showForm'])->name('register');
-    Route::post('/register', [RegisterController::class, 'register'])->middleware('throttle:5,1')->name('register.post');
+    Route::post('/register', [RegisterController::class, 'register'])->middleware('throttle:3,60')->name('register.post');
 
     // Google OAuth
     Route::get('auth/google',          [GoogleController::class, 'redirect'])->name('google.redirect');

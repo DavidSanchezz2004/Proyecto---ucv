@@ -42,6 +42,11 @@ class SecurityHeaders
         $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin');
         $response->headers->set('Cross-Origin-Resource-Policy', 'same-site');
 
+        // Cache-Control — evitar que el browser cachee páginas autenticadas en disco
+        if (auth()->check()) {
+            $response->headers->set('Cache-Control', 'no-store, max-age=0, private');
+        }
+
         // Content Security Policy
         $csp = implode('; ', [
             "default-src 'self'",
