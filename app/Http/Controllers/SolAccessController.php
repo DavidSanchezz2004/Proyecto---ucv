@@ -22,6 +22,15 @@ class SolAccessController extends Controller
             ], 422);
         }
 
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        if (!$user->isAsistente() || $company->solCredential->created_by !== $user->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Solo el asistente contable asignado puede ejecutar el acceso SOL.',
+            ], 403);
+        }
+
         $log = AccessLog::create([
             'company_id'      => $company->id,
             'user_id'         => Auth::id(),
@@ -117,6 +126,12 @@ class SolAccessController extends Controller
 
         if (!$company->hasCredentials()) {
             abort(422, 'Esta empresa no tiene credenciales SOL configuradas.');
+        }
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        if (!$user->isAsistente() || $company->solCredential->created_by !== $user->id) {
+            abort(403, 'Solo el asistente contable asignado puede ejecutar el acceso SOL.');
         }
 
         $sunat     = new SunatService();

@@ -154,10 +154,20 @@
     background: #fff; border-radius: 12px; padding: 2.5rem;
     width: 100%; max-width: 480px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); border: 1px solid #e2e8f0;
 }
-.step-indicator { width: 16px; height: 16px; border-radius: 50%; display: inline-block; }
+.step-indicator {
+    width: 18px; height: 18px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 11px; font-weight: 700;
+}
 .step-indicator.pending { background: #e2e8f0; }
-.step-indicator.active { background: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
-.step-indicator.done { background: #059669; }
+.step-indicator.active  { background: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.25); animation: pulse-step 0.8s ease infinite; }
+.step-indicator.done    { background: #059669; color: #fff; }
+.step-indicator.done::after  { content: '✓'; }
+.step-indicator.active::after { content: ''; }
+@keyframes pulse-step {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(59,130,246,0.25); }
+    50%       { box-shadow: 0 0 0 5px rgba(59,130,246,0.12); }
+}
 </style>
 @endpush
 
@@ -178,7 +188,7 @@
         <div class="exec-panel">
             <div class="exec-panel-header">
                 <h6 class="exec-panel-title">Información de Entidad</h6>
-                @if(auth()->user()->isAdmin() || auth()->user()->isSupervisor() || $company->created_by === auth()->id())
+                @if($company->created_by === auth()->id())
                 <a href="{{ route('companies.edit', $company) }}" class="btn-exec-outline py-1 px-2" style="font-size:0.7rem;">
                     <i class="bi bi-pencil me-1"></i>Editar Perfil
                 </a>
@@ -271,6 +281,8 @@
             </div>
             <div class="exec-panel-body">
                 @if($company->solCredential)
+                    @php $ownsCredential = auth()->user()->isAsistente() && auth()->id() === $company->solCredential->created_by; @endphp
+                    @if($ownsCredential)
                     <div class="mb-4">
                         <div class="data-label">Usuario SOL</div>
                         <div class="data-value ruc" style="font-size:0.9rem;">{{ $company->solCredential->usuario_sol }}</div>
@@ -280,7 +292,7 @@
                         <div class="data-value" style="font-size:1.2rem; letter-spacing:0.2em; line-height:1;">••••••••</div>
                         <div style="font-size:0.65rem;color:#64748b;margin-top:0.3rem;"><i class="bi bi-lock me-1"></i>Tokenizada con AES-256</div>
                     </div>
-                    
+
                     @if($company->estado === 'ACTIVO')
                     <div class="mt-4 pt-3 border-top" x-data="solSimulation({{ $company->id }}, '{{ $company->razon_social }}', '{{ $company->ruc }}')" x-cloak>
                         <button @click="start()" class="btn-sol" :disabled="loading">
@@ -290,13 +302,30 @@
                         @include('partials.sol-modal')
                     </div>
                     @else
-                    <div class="mt-4 pt-3 border-top text-center text-rose-500" style="font-size:0.8rem; color:#e11d48; font-weight:500;">
+                    <div class="mt-4 pt-3 border-top text-center" style="font-size:0.8rem; color:#e11d48; font-weight:500;">
                         La empresa no está activa. No se puede acceder al Menú SOL.
                     </div>
                     @endif
+                    @else
+                    {{-- Credencial registrada por otro usuario — acceso restringido --}}
+                    <div class="mb-4">
+                        <div class="data-label">Usuario SOL</div>
+                        <div class="data-value ruc" style="font-size:0.9rem; color:#94a3b8; letter-spacing:0.15em;">••••••••</div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="data-label">Clave SOL</div>
+                        <div class="data-value" style="font-size:1.2rem; letter-spacing:0.2em; line-height:1;">••••••••</div>
+                        <div style="font-size:0.65rem;color:#64748b;margin-top:0.3rem;"><i class="bi bi-lock me-1"></i>Tokenizada con AES-256</div>
+                    </div>
+                    <div class="mt-4 pt-3 border-top text-center py-3" style="background:#f8fafc; border-radius:8px;">
+                        <i class="bi bi-shield-lock-fill" style="font-size:1.8rem; color:#94a3b8; display:block; margin-bottom:0.5rem;"></i>
+                        <div style="font-size:0.8rem; color:#475569; font-weight:600;">Credencial protegida</div>
+                        <div style="font-size:0.72rem; color:#64748b; margin-top:0.25rem;">Solo visible para el asistente asignado</div>
+                    </div>
+                    @endif
                 @else
-                    @php $canManage = auth()->user()->isAdmin() || auth()->user()->isSupervisor() || $company->created_by === auth()->id(); @endphp
-                    @if($canManage)
+                    @php $canAddCredential = $company->created_by === auth()->id(); @endphp
+                    @if($canAddCredential)
                     <form method="POST" action="{{ route('companies.storeCredential', $company) }}">
                         @csrf
                         <div class="mb-3">

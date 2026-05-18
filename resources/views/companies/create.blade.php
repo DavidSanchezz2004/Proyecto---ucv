@@ -96,6 +96,34 @@
                         </div>
                     </div>
 
+                    {{-- REQ 1: Alerta informativa de responsabilidad --}}
+                    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:1rem 1.1rem;margin-bottom:1.25rem;display:flex;gap:0.85rem;align-items:flex-start;">
+                        <i class="bi bi-shield-check" style="color:#2563eb;font-size:1.15rem;flex-shrink:0;margin-top:1px;"></i>
+                        <div>
+                            <div style="font-size:0.8rem;font-weight:700;color:#1e40af;margin-bottom:0.25rem;">Registro bajo responsabilidad del usuario autorizado</div>
+                            <div style="font-size:0.75rem;color:#3b5cb8;line-height:1.55;">
+                                La información ingresada será utilizada únicamente para gestionar el acceso dentro del sistema.
+                                El equipo de investigación <strong>no accede, no visualiza ni administra</strong> credenciales tributarias de los contribuyentes.
+                                No registre datos de empresas o contribuyentes si no cuenta con autorización.
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- REQ 2: Checkbox obligatorio de autorización --}}
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input type="checkbox" name="authorization" id="authorization" value="1"
+                                class="form-check-input @error('authorization') is-invalid @enderror"
+                                {{ old('authorization') ? 'checked' : '' }}>
+                            <label class="form-check-label" for="authorization" style="font-size:0.8rem;color:#374151;">
+                                Declaro que cuento con autorización para registrar esta empresa y, si corresponde, sus credenciales de acceso.
+                            </label>
+                            @error('authorization')
+                                <div class="invalid-feedback" style="font-size:0.75rem;">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-save me-1"></i>Guardar empresa

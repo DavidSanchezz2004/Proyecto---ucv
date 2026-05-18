@@ -435,7 +435,19 @@
         @include('partials.alerts')
         @yield('content')
     </div>
+
+    {{-- REQ 6: Footer de responsabilidad académica --}}
+    <div style="padding:0.75rem 1.5rem;border-top:1px solid #e2e8f0;margin-top:auto;background:#f8fafc;">
+        <p style="font-size:0.65rem;color:#94a3b8;margin:0;text-align:center;line-height:1.5;">
+            <i class="bi bi-shield me-1"></i>
+            <strong>SOL-Access</strong> es un prototipo académico — UCV Investigación Formativa 2026.
+            El uso de credenciales reales requiere autorización expresa del titular.
+            El equipo investigador no accede ni gestiona información tributaria privada.
+        </p>
+    </div>
 </div>
+
+@stack('modals')
 
 <!-- Bootstrap JS + Alpine.js -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"

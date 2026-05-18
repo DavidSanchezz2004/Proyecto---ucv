@@ -135,7 +135,8 @@
                         <span class="font-monospace fw-semibold" style="color:#1e293b;">{{ $cred->company?->ruc ?? '—' }}</span>
                     </td>
                     <td>
-                        <span class="font-monospace fw-bold" style="color:#3b82f6;">{{ $cred->usuario_sol }}</span>
+                        <span class="font-monospace fw-bold" style="color:#94a3b8; letter-spacing:0.15em;">••••••••</span>
+                        <div style="font-size:0.6rem;color:#94a3b8;margin-top:2px;"><i class="bi bi-shield-lock me-1"></i>Solo visible al asistente</div>
                     </td>
                     <td>
                         <span class="font-monospace text-muted" style="letter-spacing:0.1em; font-size:1.1rem; line-height:1;">••••••••</span>
@@ -148,18 +149,9 @@
                         <i class="bi bi-person me-1"></i>{{ $cred->creator?->name ?? '—' }}
                     </td>
                     <td class="text-end">
-                        <div class="d-inline-flex gap-1">
-                            <a href="{{ route('sol-credentials.edit', $cred) }}" class="btn-action-icon" title="Editar">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            <form method="POST" action="{{ route('sol-credentials.destroy', $cred) }}" class="d-inline"
-                                onsubmit="return confirm('¿Eliminar de forma permanente la credencial de {{ addslashes($cred->company?->razon_social) }}?');">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn-action-icon" title="Eliminar" style="color:#e11d48;">
-                                    <i class="bi bi-trash3"></i>
-                                </button>
-                            </form>
-                        </div>
+                        <span style="font-size:0.72rem;font-weight:600;color:#94a3b8;display:inline-flex;align-items:center;gap:0.3rem;">
+                            <i class="bi bi-lock-fill"></i> Solo asistente
+                        </span>
                     </td>
                 </tr>
                 @empty

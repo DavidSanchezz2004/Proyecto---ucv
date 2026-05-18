@@ -147,17 +147,20 @@
             </div>
             <div class="exec-panel-body">
                 
-                <div class="exec-alert mb-4">
-                    <i class="bi bi-exclamation-triangle exec-alert-icon"></i>
+                {{-- REQ 3: Alerta de credenciales protegidas --}}
+                <div style="background:#fffbeb;border:1px solid #fde68a;border-left:4px solid #f59e0b;border-radius:8px;padding:1rem 1.1rem;margin-bottom:1.25rem;display:flex;gap:0.85rem;align-items:flex-start;">
+                    <i class="bi bi-shield-lock-fill" style="color:#d97706;font-size:1.2rem;flex-shrink:0;margin-top:1px;"></i>
                     <div>
-                        <div style="font-size:0.8rem; font-weight:600; color:#1e293b; margin-bottom:0.2rem;">Actualización de Clave Cifrada</div>
-                        <div style="font-size:0.75rem; color:#64748b; line-height:1.4;">
-                            Si dejas el campo de clave en blanco, el sistema conservará intacta la clave actual cifrada. Ingresa una nueva contraseña únicamente si deseas sobrescribirla.
+                        <div style="font-size:0.8rem;font-weight:700;color:#92400e;margin-bottom:0.3rem;">Credenciales protegidas</div>
+                        <div style="font-size:0.75rem;color:#78350f;line-height:1.55;">
+                            Las credenciales deben pertenecer a empresas o contribuyentes que <strong>autorizaron su uso</strong>.
+                            Si dejas la clave en blanco, se conservará la actual cifrada.
+                            El equipo de investigación <strong>no tendrá acceso directo a la contraseña</strong> ni realizará operaciones tributarias en nombre del usuario.
                         </div>
                     </div>
                 </div>
 
-                <form method="POST" action="{{ route('sol-credentials.update', $solCredential) }}">
+                <form method="POST" action="{{ route('sol-credentials.update', $solCredential) }}" id="formEditarCredencial" onsubmit="return false;">
                     @csrf @method('PUT')
                     
                     <div class="readonly-box">
@@ -192,7 +195,8 @@
                     </div>
 
                     <div class="d-flex gap-3 mt-5 pt-3 border-top">
-                        <button type="submit" class="btn-exec-warning w-100 justify-content-center">
+                        <button type="button" class="btn-exec-warning w-100 justify-content-center"
+                                data-bs-toggle="modal" data-bs-target="#modalConfirmarEdicion">
                             <i class="bi bi-shield-check me-1"></i>Actualizar Credencial
                         </button>
                         <a href="{{ route('sol-credentials.index') }}" class="btn-exec-outline w-100 justify-content-center">
@@ -205,6 +209,39 @@
     </div>
 </div>
 @endsection
+
+@push('modals')
+<div class="modal fade" id="modalConfirmarEdicion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:440px;">
+        <div class="modal-content" style="border-radius:16px;border:none;box-shadow:0 20px 60px rgba(0,0,0,0.15);">
+            <div class="modal-body p-4">
+                <div class="text-center mb-3">
+                    <div style="width:56px;height:56px;background:#fef3c7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+                        <i class="bi bi-shield-check" style="font-size:1.6rem;color:#d97706;"></i>
+                    </div>
+                    <h6 style="font-weight:700;color:#1e293b;margin-bottom:0.5rem;">Confirmar autorización</h6>
+                    <p style="font-size:0.82rem;color:#475569;line-height:1.6;margin-bottom:0;">
+                        Está por actualizar credenciales de acceso al Menú SOL.
+                        Confirme que cuenta con <strong>autorización del titular o responsable</strong> de la empresa.
+                        Esta acción quedará registrada en el historial del sistema.
+                    </p>
+                </div>
+                <div class="d-flex gap-2 mt-4">
+                    <button type="button" class="btn btn-outline-secondary w-100" data-bs-dismiss="modal"
+                            style="font-size:0.82rem;border-radius:8px;">
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn w-100" data-bs-dismiss="modal"
+                            onclick="document.getElementById('formEditarCredencial').removeAttribute('onsubmit'); document.getElementById('formEditarCredencial').submit();"
+                            style="background:#059669;color:#fff;font-size:0.82rem;border-radius:8px;font-weight:600;">
+                        <i class="bi bi-check-circle me-1"></i>Sí, cuento con autorización
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endpush
 
 @push('scripts')
 <script>

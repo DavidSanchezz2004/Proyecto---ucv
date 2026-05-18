@@ -44,6 +44,9 @@ class CompanyController extends Controller
             'estado'             => ['required', 'in:ACTIVO,BAJA,SUSPENSION'],
             'usuario_sol'        => ['nullable', 'string', 'max:8'],
             'clave_sol'          => ['nullable', 'string', 'min:4'],
+            'authorization'      => ['accepted'],
+        ], [
+            'authorization.accepted' => 'Debe confirmar que cuenta con autorización para continuar.',
         ]);
 
         $user    = Auth::user();
@@ -86,13 +89,13 @@ class CompanyController extends Controller
 
     public function edit(Company $company)
     {
-        $this->authorizeCompany($company);
+        $this->authorizeOwner($company);
         return view('companies.edit', compact('company'));
     }
 
     public function update(Request $request, Company $company)
     {
-        $this->authorizeCompany($company);
+        $this->authorizeOwner($company);
 
         $data = $request->validate([
             'ruc'                => ['required', 'regex:/^\d{11}$/', Rule::unique('companies')->ignore($company->id)],
@@ -115,7 +118,7 @@ class CompanyController extends Controller
 
     public function destroy(Company $company)
     {
-        $this->authorizeCompany($company);
+        $this->authorizeOwner($company);
         ActivityLog::record('delete_company', "Empresa eliminada: {$company->ruc} — {$company->razon_social}");
         $company->delete();
 
@@ -125,7 +128,9 @@ class CompanyController extends Controller
 
     public function storeCredential(Request $request, Company $company)
     {
-        $this->authorizeCompany($company);
+        if ($company->created_by !== Auth::id()) {
+            abort(403, 'Solo el asistente que registró esta empresa puede agregar credenciales SOL.');
+        }
 
         if ($company->solCredential) {
             return back()->with('error', 'Esta empresa ya tiene credenciales SOL registradas.');
@@ -159,5 +164,10 @@ class CompanyController extends Controller
         $user = Auth::user();
         if ($user->isAdmin() || $user->isSupervisor()) return;
         if ($company->created_by !== $user->id) abort(403);
+    }
+
+    private function authorizeOwner(Company $company): void
+    {
+        if (Auth::id() !== $company->created_by) abort(403);
     }
 }

@@ -155,6 +155,29 @@
 }
 .digit-btn:hover { background: #e2e8f0; color: #1e293b; }
 .digit-btn-active { background: #1e293b !important; color: #fff !important; border-color: #1e293b !important; }
+
+/* Indicadores de pasos en la simulación SOL */
+.step-indicator {
+    width: 18px; height: 18px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 11px; font-weight: 700;
+}
+.step-indicator.pending { background: #e2e8f0; }
+.step-indicator.active  {
+    background: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.25);
+    animation: pulse-step 0.8s ease infinite;
+}
+.step-indicator.done {
+    background: #059669;
+    color: #fff;
+}
+.step-indicator.done::after  { content: '✓'; }
+.step-indicator.active::after { content: ''; }
+@keyframes pulse-step {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(59,130,246,0.25); }
+    50%       { box-shadow: 0 0 0 5px rgba(59,130,246,0.12); }
+}
 </style>
 @endpush
 
@@ -269,11 +292,12 @@
                     </td>
                     <td class="text-center">
                         @if($company->solCredential && $company->estado === 'ACTIVO')
+                            @if(auth()->user()->isAsistente() && $company->solCredential->created_by === auth()->id())
                             <div x-data="solSimulation({{ $company->id }}, '{{ addslashes($company->razon_social) }}', '{{ $company->ruc }}')" x-cloak>
                                 <button @click="start()" class="btn-sol" :disabled="loading"
                                     style="font-family:'Montserrat',sans-serif;letter-spacing:0.02em;">
-                                    <span x-show="!loading"><i class="bi bi-box-arrow-in-right"></i> Menu  SOL</span>
-                                    <span x-show="loading">
+                                    <span x-show="!loading"><i class="bi bi-box-arrow-in-right"></i> Menu SOL</span>
+                                    <span x-show="loading" style="display:none">
                                         <span class="spinner-border spinner-border-sm" style="width:11px;height:11px;border-width:2px;"></span> Conectando
                                     </span>
                                 </button>
@@ -340,6 +364,18 @@
                                     </div>
                                 </div>
                             </div>
+                            @else
+                            <button type="button"
+                                    style="font-family:'Montserrat',sans-serif;letter-spacing:0.02em;
+                                           display:inline-flex;align-items:center;gap:0.35rem;
+                                           font-size:0.75rem;font-weight:600;
+                                           color:#92400e;background:#fffbeb;
+                                           border:1px solid #fde68a;border-radius:8px;
+                                           padding:0.4rem 0.85rem;cursor:pointer;"
+                                    data-bs-toggle="modal" data-bs-target="#modalRestriccionSOL">
+                                <i class="bi bi-lock-fill"></i> Bloqueado
+                            </button>
+                            @endif
                         @else
                             <span class="text-muted" style="font-size:0.75rem;font-weight:500;">
                                 <i class="bi bi-lock"></i>
@@ -352,7 +388,7 @@
                             <a href="{{ route('companies.show', $company) }}" class="btn-action-icon" title="Ver detalle">
                                 <i class="bi bi-eye"></i>
                             </a>
-                            @if(auth()->user()->isAdmin() || auth()->user()->isSupervisor() || $company->created_by === auth()->id())
+                            @if($company->created_by === auth()->id())
                             <a href="{{ route('companies.edit', $company) }}" class="btn-action-icon" title="Editar">
                                 <i class="bi bi-pencil"></i>
                             </a>
@@ -383,6 +419,28 @@
     @endif
 </div>
 @endsection
+
+@push('modals')
+<div class="modal fade" id="modalRestriccionSOL" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:400px;">
+        <div class="modal-content" style="border-radius:16px;border:none;box-shadow:0 20px 60px rgba(0,0,0,0.15);">
+            <div class="modal-body text-center p-5">
+                <div style="width:64px;height:64px;background:#fef3c7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">
+                    <i class="bi bi-shield-lock-fill" style="font-size:1.75rem;color:#d97706;"></i>
+                </div>
+                <h6 style="font-weight:700;color:#1e293b;margin-bottom:0.5rem;">Acceso restringido</h6>
+                <p style="font-size:0.85rem;color:#64748b;margin-bottom:1.5rem;line-height:1.6;">
+                    Solo el <strong>asistente contable</strong> que registró esta empresa puede ejecutar el acceso al Menú SOL.
+                </p>
+                <button type="button" class="btn w-100" data-bs-dismiss="modal"
+                        style="background:#1e293b;color:#fff;border-radius:8px;font-weight:600;font-size:0.85rem;padding:0.6rem;">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+@endpush
 
 @push('scripts')
 <script>

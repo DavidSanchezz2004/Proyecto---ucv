@@ -36,14 +36,14 @@ class SecurityHeaders
         //              Google Fonts (fonts.googleapis.com, fonts.gstatic.com)
         $csp = implode('; ', [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
             "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com",
             "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net data:",
             "img-src 'self' data:",
-            "connect-src 'self'",
+            "connect-src 'self' https://cdn.jsdelivr.net",
             "frame-ancestors 'self'",
             "base-uri 'self'",
-            "form-action 'self'",
+            "form-action 'self' https://*.sunat.gob.pe",
         ]);
         $response->headers->set('Content-Security-Policy', $csp);
 

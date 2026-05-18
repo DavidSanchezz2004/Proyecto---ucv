@@ -58,12 +58,12 @@ class SolCredentialController extends Controller
 
     public function edit(SolCredential $solCredential)
     {
-        $solCredential->load('company');
-        return view('sol.credentials.edit', compact('solCredential'));
+        abort(403, 'Las credenciales SOL solo pueden ser modificadas por el asistente contable asignado.');
     }
 
     public function update(Request $request, SolCredential $solCredential)
     {
+        abort(403, 'Las credenciales SOL solo pueden ser modificadas por el asistente contable asignado.');
         $data = $request->validate([
             'usuario_sol' => ['required', 'string', 'max:8', 'min:1'],
             'clave_sol'   => ['nullable', 'string', 'min:4', 'max:20'],
@@ -92,9 +92,7 @@ class SolCredentialController extends Controller
 
     public function destroy(SolCredential $solCredential)
     {
-        $ruc = $solCredential->company->ruc ?? 'N/A';
-        ActivityLog::record('delete_credential', "Credencial SOL eliminada para RUC: {$ruc}");
-        $solCredential->delete();
+        abort(403, 'Las credenciales SOL solo pueden ser eliminadas por el asistente contable asignado.');
 
         return redirect()->route('sol-credentials.index')
             ->with('success', "Credencial eliminada correctamente.");
