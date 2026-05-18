@@ -1,2 +1,13 @@
 User-agent: *
-Disallow:
+Disallow: /register
+Disallow: /login
+Disallow: /password/
+Disallow: /api/
+Disallow: /auth/
+Disallow: /dashboard
+Disallow: /users
+Disallow: /companies
+Disallow: /sol-credentials
+Disallow: /access-logs
+Disallow: /reports/
+Disallow: /survey
